@@ -68,6 +68,10 @@ $ cargo embed --target thumbv7em-none-eabihf
 $ # If you are working with micro:bit v1
 $ rustup target add thumbv6m-none-eabi
 $ cargo embed --target thumbv6m-none-eabi
+
+$ # If you are working with an nRF52840
+$ rustup target add thumbv7em-none-eabi
+$ cargo embed --target thumbv7em-none-eabi
 ```
 
 If everything works correctly cargo-embed should first compile the small example program
