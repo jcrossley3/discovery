@@ -55,7 +55,7 @@ PATH=$PATH:$HOME/local/gcc-arm-none-eabi-9-2020-q2-update/bin
 
 ## udev rules
 
-These rules let you use USB devices like the micro:bit without root privilege, i.e. `sudo`.
+These rules let you use USB devices like the nRF52840-DK without root privilege, i.e. `sudo`.
 
 Create this file in `/etc/udev/rules.d` with the content shown below.
 

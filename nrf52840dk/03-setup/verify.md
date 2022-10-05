@@ -6,23 +6,23 @@ Let's verify that all the tools were installed correctly.
 
 ### Verify permissions
 
-Connect the micro:bit to your computer using a USB cable.
+Connect the nRF52840-DK to your computer using a USB cable.
 
-The micro:bit should now appear as a USB device (file) in `/dev/bus/usb`. Let's find out how it got
+The nRF52840-DK should now appear as a USB device (file) in `/dev/bus/usb`. Let's find out how it got
 enumerated:
 
 ``` console
-$ lsusb | grep -i "NXP ARM mbed"
-Bus 001 Device 065: ID 0d28:0204 NXP ARM mbed
+$ lsusb | grep -i "segger j-link"
+Bus 003 Device 020: ID 1366:1015 SEGGER J-Link
 $ # ^^^        ^^^
 ```
 
-In my case, the micro:bit got connected to the bus #1 and got enumerated as the device #65. This means the
-file `/dev/bus/usb/001/065` *is* the micro:bit. Let's check its permissions:
+In my case, the nRF52840-DK got connected to the bus #3 and got enumerated as the device #20. This means the
+file `/dev/bus/usb/003/020` *is* the nRF52840-DK. Let's check its permissions:
 
 ``` console
-$ ls -l /dev/bus/usb/001/065
-crw-rw-rw-. 1 root root 189, 64 Sep  5 14:27 /dev/bus/usb/001/065
+$ ls -l /dev/bus/usb/003/020
+crw-rw-rw-+ 1 root root 189, 275 Oct  5 10:37 /dev/bus/usb/003/020
 ```
 
 The permissions should be `crw-rw-rw-`. If it's not ... then check your [udev
@@ -37,37 +37,16 @@ $ sudo udevadm control --reload-rules
 # All
 
 ## Verifying cargo-embed
-First, connect the micro:bit to your Computer using a USB cable.
+First, connect the nRF52840-DK to your Computer using a USB cable.
 
-At least an orange LED right next to the USB port of the micro:bit should light up.
-Furthermore, if you have never flashed another program on to your micro:bit, the default
-program the micro:bit ships with should start blinking the red LEDs on its back, you
-can ignore them.
-
-Next up you will have to modify `Embed.toml` in the `src/03-setup` directory of the
-book's source code. In the `default.general` section you will find two commented out
-chip variants:
-
-```toml
-[default.general]
-# chip = "nrf52833_xxAA" # uncomment this line for micro:bit V2
-# chip = "nrf51822_xxAA" # uncomment this line for micro:bit V1
-```
-
-If you are working with the micro:bit v2 board uncomment the first, for the v1
-uncomment the second line.
+At least one LED on the nRF52840-DK should light up.
 
 Next run one of these commands:
 
 ```
-$ # make sure you are in src/03-setup of the books source code
-$ # If you are working with micro:bit v2 or an nRF52840
+$ # make sure you are in the 03-setup/ dir
 $ rustup target add thumbv7em-none-eabihf
-$ cargo embed --target thumbv7em-none-eabihf
-
-$ # If you are working with micro:bit v1
-$ rustup target add thumbv6m-none-eabi
-$ cargo embed --target thumbv6m-none-eabi
+$ cargo embed
 ```
 
 If everything works correctly cargo-embed should first compile the small example program
@@ -78,5 +57,5 @@ prints Hello World.
 
 [general troubleshooting]: ../appendix/1-general-troubleshooting/index.html
 
-This output is coming from the small Rust program you just flashed on to your micro:bit.
+This output is coming from the small Rust program you just flashed on to your nRF52840-DK.
 Everything is working properly and you can continue with the next chapters!
