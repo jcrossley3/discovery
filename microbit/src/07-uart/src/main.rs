@@ -1,29 +1,57 @@
 #![no_main]
 #![no_std]
 
-use core::fmt::Write;
 use cortex_m_rt::entry;
+use rtt_target::rtt_init_print;
 use panic_rtt_target as _;
-use rtt_target::{rprintln, rtt_init_print};
+
+#[cfg(feature = "v1")]
+use microbit::{
+    hal::prelude::*,
+    hal::uart,
+    hal::uart::{Baudrate, Parity},
+};
+
+#[cfg(feature = "v2")]
+use microbit::{
+    hal::prelude::*,
+    hal::uarte,
+    hal::uarte::{Baudrate, Parity},
+};
+
+#[cfg(feature = "v2")]
+mod serial_setup;
+#[cfg(feature = "v2")]
+use serial_setup::UartePort;
 
 #[entry]
 fn main() -> ! {
     rtt_init_print!();
-    let board = nrf52840_dk_bsp::Board::take().unwrap();
+    let board = microbit::Board::take().unwrap();
 
-    let mut serial = board.cdc;
+    #[cfg(feature = "v1")]
+    let mut serial = {
+        uart::Uart::new(
+            board.UART0,
+            board.uart.into(),
+            Parity::EXCLUDED,
+            Baudrate::BAUD115200,
+        )
+    };
 
-    // write a byte array
-    let mut buf: [u8; 1] = [b'X'; 1];
-    serial.write(&buf).unwrap();
+    #[cfg(feature = "v2")]
+    let mut serial = {
+        let serial = uarte::Uarte::new(
+            board.UARTE0,
+            board.uart.into(),
+            Parity::EXCLUDED,
+            Baudrate::BAUD115200,
+        );
+        UartePort::new(serial)
+    };
 
-    // write a string since the UART impls Write
-    let s = "The quick brown fox jumps over the lazy dog";
-    write!(serial, "\r\n{}\r\n", s).unwrap();
+    nb::block!(serial.write(b'X')).unwrap();
+    nb::block!(serial.flush()).unwrap();
 
-    loop {
-        serial.read(&mut buf).unwrap();
-        rprintln!("{}", buf[0] as char);
-        serial.write(&buf).unwrap();
-    }
+    loop {}
 }
